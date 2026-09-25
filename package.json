@@ -1,0 +1,48 @@
+{
+  "name": "whl-motocare-supplies",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "bootstrap": "node --experimental-strip-types scripts/bootstrap.mjs",
+    "test": "node --experimental-strip-types scripts/smoke-test.mjs && node scripts/refresh-test.mjs && node scripts/theme-test.mjs && node --experimental-strip-types scripts/proxy-test.mjs && node --experimental-strip-types scripts/admin-test.mjs",
+    "test:shop": "node --experimental-strip-types scripts/smoke-test.mjs",
+    "test:refresh": "node scripts/refresh-test.mjs",
+    "test:admin": "node --experimental-strip-types scripts/admin-test.mjs",
+    "db:push": "drizzle-kit push",
+    "verify": "npm run lint && npx next typegen && npm run typecheck && npm run build",
+    "test:proxy": "node --experimental-strip-types scripts/proxy-test.mjs",
+    "test:theme": "node scripts/theme-test.mjs"
+  },
+  "dependencies": {
+    "dotenv": "17.3.1",
+    "drizzle-orm": "0.45.2",
+    "next": "^16.3.5",
+    "pg": "8.20.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "server-only": "^0.0.1",
+    "sharp": "^0.35.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "4.1.17",
+    "@types/node": "22.19.15",
+    "@types/pg": "8.18.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "9.39.4",
+    "eslint-config-next": "^16.3.5",
+    "postcss": "^8.5.28",
+    "tailwindcss": "4.1.17",
+    "typescript": "5.9.3"
+  },
+  "description": "Motorcycle spare parts, online ordering and repair bookings for WHL Motocare Supplies, Ndirande, Blantyre.",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
