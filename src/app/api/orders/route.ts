@@ -1,11 +1,12 @@
 import { randomBytes } from "node:crypto";
 import { and, eq, inArray } from "drizzle-orm";
-import { db } from "@/db";
+import { db, hasDatabaseConfig } from "@/db";
 import { orders, products, type OrderItem } from "@/db/schema";
 import { apiError, choice, email, phone, readBody, text, ValidationError } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
+    if (!hasDatabaseConfig()) return Response.json({ error: "The database is not configured yet. Set DATABASE_URL before submitting requests." }, { status: 503 });
     const body = await readBody(request);
     const customerName = text(body.customerName, "your name", 100);
     const customerPhone = phone(body.phone);

@@ -1,10 +1,11 @@
 import { and, eq } from "drizzle-orm";
-import { db } from "@/db";
+import { db, hasDatabaseConfig } from "@/db";
 import { bookings, orders } from "@/db/schema";
 import { apiError, phone, readBody, text } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
+    if (!hasDatabaseConfig()) return Response.json({ error: "The database is not configured yet. Set DATABASE_URL before tracking requests." }, { status: 503 });
     const body = await readBody(request);
     const reference = text(body.reference, "your reference number", 40).toUpperCase();
     const customerPhone = phone(body.phone);

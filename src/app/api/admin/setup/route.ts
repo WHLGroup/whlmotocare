@@ -1,4 +1,4 @@
-import { db } from "@/db";
+import { db, hasDatabaseConfig } from "@/db";
 import { adminAccounts } from "@/db/schema";
 import { adminBody, adminError, AdminError, adminJson, checkOrigin, hashPassword, hasAdmin, passwordValue, rateLimit, startAdminSession, validateSetupKey } from "@/lib/admin-auth";
 import { email, text } from "@/lib/validation";
@@ -6,6 +6,7 @@ import { email, text } from "@/lib/validation";
 export async function POST(request: Request) {
   try {
     checkOrigin(request);
+    if (!hasDatabaseConfig()) throw new AdminError("Database is not configured. Connect PostgreSQL to continue.", 503);
     if (await hasAdmin()) throw new AdminError("Owner setup is complete. Please sign in with your admin account.", 409);
     await rateLimit("owner-setup", 10);
     const body = await adminBody(request);

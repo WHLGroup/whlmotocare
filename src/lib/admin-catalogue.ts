@@ -2,7 +2,7 @@ import "server-only";
 
 import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { db } from "@/db";
+import { db, hasDatabaseConfig } from "@/db";
 import { catalogueImages, products } from "@/db/schema";
 import { brands, categories } from "@/lib/catalog";
 import { choice, text, ValidationError } from "@/lib/validation";
@@ -13,11 +13,13 @@ export function serializeProduct(product: typeof products.$inferSelect) {
 }
 
 export async function getAdminProducts() {
+  if (!hasDatabaseConfig()) return [];
   const rows = await db.select().from(products).orderBy(desc(products.updatedAt), products.name);
   return rows.map(serializeProduct);
 }
 
 export async function validateProduct(body: Record<string, unknown>) {
+  if (!hasDatabaseConfig()) throw new AdminError("Database is not configured. Connect PostgreSQL to continue.", 503);
   const name = text(body.name, "a product name", 120);
   if (name.length < 2) throw new ValidationError("A product name needs at least 2 characters.");
   const category = choice(body.category, categories.map((item) => item.id), "a category");

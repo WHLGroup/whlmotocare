@@ -3,7 +3,7 @@ import "server-only";
 import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { and, eq, gt, lte, sql } from "drizzle-orm";
-import { db } from "@/db";
+import { db, hasDatabaseConfig } from "@/db";
 import { adminAccounts, adminRateLimits, adminSessions } from "@/db/schema";
 import { ValidationError } from "@/lib/validation";
 
@@ -115,11 +115,13 @@ export async function verifyPassword(password: string, stored: string) {
 }
 
 export async function hasAdmin() {
+  if (!hasDatabaseConfig()) return false;
   const [account] = await db.select({ id: adminAccounts.id }).from(adminAccounts).where(eq(adminAccounts.id, "owner")).limit(1);
   return Boolean(account);
 }
 
 export async function getAdmin(): Promise<AdminIdentity | null> {
+  if (!hasDatabaseConfig()) return null;
   const token = (await cookies()).get(sessionCookie)?.value;
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
   const [account] = await db.select({ id: adminAccounts.id, name: adminAccounts.name, email: adminAccounts.email }).from(adminSessions).innerJoin(adminAccounts, eq(adminSessions.adminId, adminAccounts.id)).where(and(eq(adminSessions.tokenHash, digest(token)), gt(adminSessions.expiresAt, new Date()))).limit(1);

@@ -18,6 +18,10 @@ const globalForDb = globalThis as typeof globalThis & {
   __whlDb?: NodePgDatabase;
 };
 
+export function hasDatabaseConfig(): boolean {
+  return Boolean(process.env.DATABASE_URL ?? process.env.POSTGRES_URL);
+}
+
 function connectionString(): string {
   const url = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
   if (!url) {

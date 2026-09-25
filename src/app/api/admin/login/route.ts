@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { db, hasDatabaseConfig } from "@/db";
 import { adminAccounts } from "@/db/schema";
 import { adminBody, adminError, AdminError, adminJson, checkOrigin, digest, hashPassword, passwordValue, rateLimit, startAdminSession, verifyPassword } from "@/lib/admin-auth";
 import { email, text } from "@/lib/validation";
@@ -7,6 +7,7 @@ import { email, text } from "@/lib/validation";
 export async function POST(request: Request) {
   try {
     checkOrigin(request);
+    if (!hasDatabaseConfig()) throw new AdminError("Database is not configured. Connect PostgreSQL to continue.", 503);
     const body = await adminBody(request);
     const ownerEmail = email(text(body.email, "your email address", 200)).toLowerCase();
     const password = passwordValue(body.password);
